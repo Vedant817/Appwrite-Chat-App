@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { databases, DATABASE_ID, COLLECTION_ID_MESSAGE } from '../appwriteConfig';
 
 

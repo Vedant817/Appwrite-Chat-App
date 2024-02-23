@@ -1,6 +1,8 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react'
-import { databases, DATABASE_ID, COLLECTION_ID_MESSAGE } from '../appwriteConfig';
+import client, { databases, DATABASE_ID, COLLECTION_ID_MESSAGE } from '../appwriteConfig';
 import { ID, Query } from 'appwrite';
+import { Trash2 } from 'react-feather';
 
 
 const Room = () => {
@@ -8,7 +10,11 @@ const Room = () => {
   const [messageBody, setMessageBody] = useState('')
 
   useEffect(() => {
-    getMessages()
+    getMessages();
+
+    client.subscribe(`databases.${DATABASE_ID}.collections.${COLLECTION_ID_MESSAGE}.documents`,response => { //! Helps in building a real time connection so that changes at one can be reflected at the other too.
+      console.log('Real Time: ', response);
+    })
   }, [])
 
   const handleSubmit = async (e) => {
@@ -35,16 +41,21 @@ const Room = () => {
         DATABASE_ID,
         COLLECTION_ID_MESSAGE,
         //TODO: Adding the Query for Fetching the Messages in order.
-        // [
-        //   Query.orderDesc("$createdAt"),
-        //   Query.limit(100)
-        // ]
-      )
+        [
+          // Query.orderDesc("$createdAt"),
+          // Query.limit(100)
+        ]
+      );
       console.log('RESPONSE: ', response);
       setMessages(response.documents)
     } catch (error) {
       alert('Error Fetching the Messages!!', error)
     }
+  }
+
+  const deleteMessage = async (message_id) => {
+    databases.deleteDocument(DATABASE_ID, COLLECTION_ID_MESSAGE, message_id);
+    setMessages(prevState => messages.filter(message => message.$id !== message_id))
   }
 
   return (
@@ -64,7 +75,8 @@ const Room = () => {
           {messages.map((message) => (
             <div key={message.$id} className='message--wrapper'>
               <div className='message--header'>
-                <small className='message-timestamp'>{message.$createdAt}</small>
+                <small className='message-timestamp'>{new Date(message.$createdAt).toLocaleString()}</small>
+                <Trash2 onClick={()=>{deleteMessage(message.$id)}} className='delete--btn' />
               </div>
               <div className='message--body'>
                 <span>{message.body}</span>

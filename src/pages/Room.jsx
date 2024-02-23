@@ -12,9 +12,19 @@ const Room = () => {
   useEffect(() => {
     getMessages();
 
-    client.subscribe(`databases.${DATABASE_ID}.collections.${COLLECTION_ID_MESSAGE}.documents`,response => { //! Helps in building a real time connection so that changes at one can be reflected at the other too.
-      console.log('Real Time: ', response);
-    })
+    const unsubscribe = client.subscribe(`databases.${DATABASE_ID}.collections.${COLLECTION_ID_MESSAGE}.documents`,response => { //! Helps in building a real time connection so that changes at one can be reflected at the other too.
+      if(response.events.includes("databases.*.collections.*documents.*create")){
+        console.log('MESSAGE WAS CREATED');
+        setMessages(prevState => [response.payload, ...prevState])
+      }
+      if(response.events.includes("databases.*.collections.*.documents.*.delete")){
+        console.log('MESSAGE WAS DELETED');
+        setMessages(prevState => prevState.filter(message => message.$id !== response.payload.$id))
+      }
+    });
+    return () => {
+      unsubscribe();
+    }
   }, [])
 
   const handleSubmit = async (e) => {

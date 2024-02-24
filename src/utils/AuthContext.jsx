@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import {account} from '../appwriteConfig';
-import {useNavigate} from 'react-router-dom'
+import { account } from '../appwriteConfig';
+import { useNavigate } from 'react-router-dom'
 
 const AuthContext = createContext()
 
@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
         getUserOnLoad()
     }, [])
 
-    const getUserOnLoad = async ()=>{
+    const getUserOnLoad = async () => {
         try {
             const accountDetails = await account.get();
             setUser(accountDetails)
@@ -36,9 +36,16 @@ export const AuthProvider = ({ children }) => {
         }
     }
 
+    const handleUserLogout = async () => {
+        await account.deleteSession('current');
+        setUser(null)
+        //* This will automatically navigate us to the login page as user will be set to null and Private Route will protect from accessing other pages.
+    }
+
     const contextData = {
         user,
-        handleUserLogin
+        handleUserLogin,
+        handleUserLogout
     }
 
     return <AuthContext.Provider value={contextData}>

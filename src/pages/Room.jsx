@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import client, { databases, DATABASE_ID, COLLECTION_ID_MESSAGE } from '../appwriteConfig';
 import { ID, Query } from 'appwrite';
 import { Trash2 } from 'react-feather';
+import Header from '../components/Header';
 
 
 const Room = () => {
@@ -51,15 +52,15 @@ const Room = () => {
         DATABASE_ID,
         COLLECTION_ID_MESSAGE,
         //TODO: Adding the Query for Fetching the Messages in order.
-        [
-          // Query.orderDesc("$createdAt"),
-          // Query.limit(100)
-        ]
+        // [
+        //   Query.orderDesc("createdAt"),
+        //   Query.limit(100)
+        // ]
       );
       console.log('RESPONSE: ', response);
       setMessages(response.documents)
     } catch (error) {
-      alert('Error Fetching the Messages!!', error)
+      alert('Error Fetching the Messages!!' + error.message)
     }
   }
 
@@ -70,8 +71,8 @@ const Room = () => {
 
   return (
     <main className='container'>
+      <Header />
       <div className='room--container'>
-
         <form id='message--form' onSubmit={handleSubmit}>
           <div>
             <textarea required maxLength='1000' placeholder='Say Something...' onChange={(e) => { setMessageBody(e.target.value) }} value={messageBody} />

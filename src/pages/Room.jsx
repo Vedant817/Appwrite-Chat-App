@@ -52,8 +52,8 @@ const Room = () => {
         COLLECTION_ID_MESSAGE,
         //TODO: Adding the Query for Fetching the Messages in order.
         [
-          // Query.orderDesc("$createdAt"),
-          // Query.limit(100)
+          Query.orderDesc("$createdAt"),
+          Query.limit(100)
         ]
       );
       console.log('RESPONSE: ', response);

@@ -29,7 +29,7 @@ const Room = () => {
     return () => {
       unsubscribe();
     }
-  }, [])
+  }, [messages])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -41,7 +41,7 @@ const Room = () => {
     }
 
     let permissions = [
-      Permission.write(Role.user(user.$id)) //! This allows only the current user to make changes into the messages sent.
+      Permission.write(Role.users(user.$id)) //! This allows only the current user to make changes into the messages sent.
     ]
 
     let response = await databases.createDocument(

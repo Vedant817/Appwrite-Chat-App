@@ -4,9 +4,12 @@ import client, { databases, DATABASE_ID, COLLECTION_ID_MESSAGE } from '../appwri
 import { ID, Query } from 'appwrite';
 import { Trash2 } from 'react-feather';
 import Header from '../components/Header';
+import { useAuth } from '../utils/AuthContext';
 
 
 const Room = () => {
+  const {user} = useAuth()
+
   const [messages, setMessages] = useState([]);
   const [messageBody, setMessageBody] = useState('')
 
@@ -32,6 +35,8 @@ const Room = () => {
     e.preventDefault()
 
     const payload = {
+      user_id: user.$id,
+      username: user.name,
       body: messageBody
     }
 
@@ -54,7 +59,7 @@ const Room = () => {
         //TODO: Adding the Query for Fetching the Messages in order.
         // [
         //   Query.orderDesc("createdAt"),
-        //   Query.limit(100)
+        //   Query.limit(20)
         // ]
       );
       console.log('RESPONSE: ', response);
@@ -86,7 +91,14 @@ const Room = () => {
           {messages.map((message) => (
             <div key={message.$id} className='message--wrapper'>
               <div className='message--header'>
+                <p>
+                  {message?.username ? (
+                    <span>{message.username}</span>
+                  ) : (
+                    <span>Anonymous User</span>
+                  )}
                 <small className='message-timestamp'>{new Date(message.$createdAt).toLocaleString()}</small>
+                </p>
                 <Trash2 onClick={()=>{deleteMessage(message.$id)}} className='delete--btn' />
               </div>
               <div className='message--body'>
